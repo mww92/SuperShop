@@ -6,7 +6,7 @@ import java.util.List;
 import org.example.db.EntityBase;
 import org.example.db.MockDb;
 import org.example.shop.Client;
-
+//koment
 public class MockClientDaoImpl implements ClientDao{
 
 	private MockDb db;
