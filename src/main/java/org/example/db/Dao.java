@@ -4,9 +4,8 @@ import java.util.List;
 
 public interface Dao<E extends EntityBase> {
 
-	public void save(E obj);
-	public void delete(E obj);
-	public void update(E obj);
+	public void save(E ent);
+	public void delete(E ent);
 	public List<E> getAll();
 	public E get(int id);
 }

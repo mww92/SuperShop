@@ -11,6 +11,4 @@ public abstract class EntityBase {
 	public void setId(int id) {
 		this.id = id;
 	}
-	
-	
 }

@@ -4,22 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MockDb {
-	
-	private List<EntityBase> items;
-	private int size;
-	public MockDb() {
-		this.items = new ArrayList<EntityBase>();
-	}
 
+	private List<EntityBase> items = new ArrayList<EntityBase>();
+	private int index;
+	
 	public List<EntityBase> getItems() {
 		return items;
 	}
 	
-	public void addToList(EntityBase obj)
+	public void save(EntityBase ent)
 	{
-		size++;
-		obj.setId(size);
-		items.add(obj);
+		index++;
+		ent.setId(index);
+		items.add(ent);
 	}
-	
 }
