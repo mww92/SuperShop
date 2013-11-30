@@ -43,7 +43,15 @@ public class MockClientDaoImpl implements ClientDao{
 		for(Client c: getAll())
 		{
 			if(c.getId()==id)
-				return c;
+			{
+				Client c1 = new Client();
+				c1.setId(c.getId());
+				c1.setEmail(c.getEmail());
+				c1.setNumber(c.getNumber());
+				c1.setSurname(c.getSurname());
+				c1.setName(c.getName());
+				return c1;
+			}
 		}
 		return null;
 	}
