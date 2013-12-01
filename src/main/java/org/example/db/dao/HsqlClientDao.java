@@ -88,6 +88,7 @@ public class HsqlClientDao implements ClientDao{
 			insert.setString(2, ent.getSurname());
 			insert.setString(3, ent.getEmail());
 			insert.setString(4, ent.getNumber());
+			
 			insert.executeUpdate();
 
 		} catch (SQLException e) {
@@ -139,6 +140,7 @@ public class HsqlClientDao implements ClientDao{
 	public Client get(int id) {
 		
 		try {
+			selectId.setInt(1, id);
 			ResultSet rs = selectId.executeQuery();
 			while(rs.next()){
 			

@@ -13,6 +13,8 @@ public class Main {
 		Connection connection=null;
 		try{
 			connection = DriverManager.getConnection("jdbc:hsqldb:hsql://localhost/workdb");
+			
+			
 			connection.setAutoCommit(false);
 			
 			ClientDao dao = new HsqlClientDao(connection);

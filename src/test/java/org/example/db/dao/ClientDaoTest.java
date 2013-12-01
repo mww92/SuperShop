@@ -2,8 +2,14 @@ package org.example.db.dao;
 
 import static org.junit.Assert.*;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import org.example.db.MockDb;
 import org.example.shop.Client;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -11,6 +17,9 @@ import org.junit.Test;
 public class ClientDaoTest {
 
 	ClientDao dao;
+
+	Connection connection = null;
+	private Statement drop;
 	
 	@BeforeClass
 	public static void initialize()
@@ -25,17 +34,41 @@ public class ClientDaoTest {
 		c.setName("Jan");
 		c.setSurname("Nowak");
 		c.setNumber("1234");
-		MockDb db = new MockDb();
-		db.save(c);
-		dao = new MockClientDaoImpl(db);
+		try {
+			connection = DriverManager.getConnection("jdbc:hsqldb:hsql://localhost/workdb");
+			dao = new HsqlClientDao(connection);
+			dao.save(c);
+			drop = connection.createStatement();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	@After
+	public void teardown()
+	{
+		try{
+			if(connection!=null && !connection.isClosed())
+			{	
+				drop.executeUpdate("Drop table Client");
+				connection.close();
+				connection = null;
+			}}
+			catch(Exception ex)
+			{
+				ex.printStackTrace();
+			}
 	}
 	
 	@Test
 	public void testGet() {
 		
-		Client c1 = dao.get(1);
+		Client c1 = dao.get(0);
 		Client c2 = dao.get(2);
-		Client c3 = dao.get(1);
+		Client c3 = dao.get(0);
 		
 		assertNotNull("Zwrócono null mimo ze obiekt jest w bazie",c1);
 		assertNull("zwrócono wartosc mimo, że nie ma takiego obiektu w bazie",c2);
