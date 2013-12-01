@@ -8,4 +8,5 @@ public interface Dao<E extends EntityBase> {
 	public void delete(E ent);
 	public List<E> getAll();
 	public E get(int id);
+	public void update(E ent);
 }

@@ -66,4 +66,9 @@ public class MockClientDaoImpl implements ClientDao{
 		
 	}
 
+	public void update(Client ent) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
