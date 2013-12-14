@@ -1,23 +1,22 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
 
+import org.example.db.HsqlUnitOfWork;
 import org.example.db.dao.ClientDao;
 import org.example.db.dao.HsqlClientDao;
+import org.example.db.dao.HsqlProductDao;
 import org.example.shop.Client;
+import org.example.shop.Product;
 
 
 public class Main {
 
 	public static void main(String[] args) {
 		
-		Connection connection=null;
-		try{
-			connection = DriverManager.getConnection("jdbc:hsqldb:hsql://localhost/workdb");
-			
-			
-			connection.setAutoCommit(false);
-			
-			ClientDao dao = new HsqlClientDao(connection);
+		
+		
+			HsqlUnitOfWork uow = new HsqlUnitOfWork();
+			ClientDao dao = new HsqlClientDao(uow);
 			Client c = new Client();
 			
 			c.setEmail("a@wp.pl");
@@ -30,26 +29,8 @@ public class Main {
 			c1.setId(0);
 			dao.delete(c1);
 			dao.save(c);
-			
-			connection.commit();
-		
-		}catch(Exception ex)
-		{
-			ex.printStackTrace();
-		}
-		finally
-		{
-			try{
-			if(connection!=null && !connection.isClosed())
-			{	
-				connection.close();
-				connection = null;
-			}}
-			catch(Exception ex)
-			{
-				ex.printStackTrace();
-			}
-		}
+			uow.commit();
+			uow.close();
 		System.out.println("koniec");
 	}
 

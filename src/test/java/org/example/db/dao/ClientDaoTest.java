@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.example.db.HsqlUnitOfWork;
 import org.example.db.MockDb;
 import org.example.shop.Client;
 import org.junit.After;
@@ -35,10 +36,12 @@ public class ClientDaoTest {
 		c.setSurname("Nowak");
 		c.setNumber("1234");
 		try {
-			connection = DriverManager.getConnection("jdbc:hsqldb:hsql://localhost/workdb");
-			dao = new HsqlClientDao(connection);
+
+			HsqlUnitOfWork uow = new HsqlUnitOfWork();
+			dao = new HsqlClientDao(uow);
 			dao.save(c);
-			drop = connection.createStatement();
+			uow.commit();
+			drop = uow.getConnection().createStatement();
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

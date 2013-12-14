@@ -9,9 +9,13 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.example.db.DaoBase;
+import org.example.db.EntityBase;
+import org.example.db.HsqlUnitOfWork;
+import org.example.shop.Address;
 import org.example.shop.Client;
 
-public class HsqlClientDao implements ClientDao{
+public class HsqlClientDao extends DaoBase<Client> implements ClientDao{
 
 	
 	private Statement stmt;
@@ -21,14 +25,14 @@ public class HsqlClientDao implements ClientDao{
 	private PreparedStatement update;
 	private PreparedStatement select;
 	private PreparedStatement selectId;
+	AddressDao addressDao;
 	
 	
-	
-	public HsqlClientDao(Connection connection)
+	public HsqlClientDao(HsqlUnitOfWork uow)
 	{
-		
+		super(uow);
 		try {
-			
+			Connection connection = uow.getConnection();
 			
 			ResultSet rs = connection.getMetaData().getTables(null, null, null, null);
 			boolean exist = false;
@@ -80,8 +84,9 @@ public class HsqlClientDao implements ClientDao{
 	}
 	
 	
-	public void save(Client ent) {
+	public void persistAdd(EntityBase entity) {
 	
+		Client ent = (Client) entity;
 		try 
 		{
 			insert.setString(1, ent.getName());
@@ -90,14 +95,17 @@ public class HsqlClientDao implements ClientDao{
 			insert.setString(4, ent.getNumber());
 			
 			insert.executeUpdate();
-
+			
+			
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	public void delete(Client ent) {
+	public void persistDelete(EntityBase entity) {
+		Client ent = (Client) entity;
 		try 
 		{
 			delete.setInt(1, ent.getId());
@@ -163,7 +171,7 @@ public class HsqlClientDao implements ClientDao{
 	}
 
 	public void setAddresses(Client c) {
-		
+		c.setAddresses(addressDao.getAddressByClientId(c.getId()));
 		
 	}
 
@@ -173,8 +181,9 @@ public class HsqlClientDao implements ClientDao{
 	}
 
 
-	public void update(Client ent) {
-		
+	public void persistUpdate(EntityBase entity) {
+
+		Client ent = (Client) entity;
 		try
 		{
 			update.setString(1, ent.getName());
@@ -191,5 +200,7 @@ public class HsqlClientDao implements ClientDao{
 		
 		
 	}
+
+
 
 }
