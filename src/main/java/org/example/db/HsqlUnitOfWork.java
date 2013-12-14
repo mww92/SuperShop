@@ -65,6 +65,7 @@ public class HsqlUnitOfWork implements UnitOfWork{
 				deleted.get(ent).persistDelete(ent);
 			
 			conn.commit();
+			conn.setAutoCommit(true);
 			
 		}catch(SQLException ex)
 		{
