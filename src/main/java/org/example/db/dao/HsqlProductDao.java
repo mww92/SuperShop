@@ -6,12 +6,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.example.db.Dao;
+import org.example.db.DaoBase;
+import org.example.db.EntityBase;
+import org.example.db.HsqlUnitOfWork;
+import org.example.shop.Client;
 import org.example.shop.Product;
 
-public class HsqlProductDao implements Dao<Product>{
+public class HsqlProductDao extends DaoBase<Product>  implements Dao<Product>{
 
 	
 	private Statement stmt;
@@ -22,11 +27,11 @@ public class HsqlProductDao implements Dao<Product>{
 	private PreparedStatement getAll;
 	
 	
-	public HsqlProductDao(Connection connection)
+	public HsqlProductDao(HsqlUnitOfWork uow)
 	{
-		
+		super(uow);
 		try {
-			
+			Connection connection = uow.getConnection();
 			stmt = connection.createStatement();
 			
 			ResultSet rs = connection.getMetaData().getTables(null, null, null, null);
@@ -48,6 +53,15 @@ public class HsqlProductDao implements Dao<Product>{
 			getById = connection.prepareStatement(""
 					+ "SELECT * FROM product WHERE id=?");
 			
+			delete = connection.prepareStatement("DELETE FROM product WHERE id=?");
+			
+			getAll = connection.prepareStatement("SELECT * FROM product");
+			
+			update = connection.prepareStatement(""
+					+ "update product set"
+					+ "(name,description,prize)=(?,?,?)"
+					+ "where id=?");
+			
 			if(!exists)
 			{
 				stmt.executeUpdate(""
@@ -64,9 +78,11 @@ public class HsqlProductDao implements Dao<Product>{
 		}
 		
 	}
-	
-	public void save(Product ent) {
+
+	@Override
+	public void persistAdd(EntityBase entity) {
 		
+		Product ent = (Product)entity;
 		try {
 			insert.setString(1, ent.getName());
 			insert.setString(2, ent.getDescription());
@@ -79,16 +95,47 @@ public class HsqlProductDao implements Dao<Product>{
 		
 	}
 
-	public void delete(Product ent) {
-		// TODO Auto-generated method stub
-		
+	@Override
+	public void persistDelete(EntityBase entity) {
+		Product ent = (Product) entity;
+		try 
+		{
+			delete.setInt(1, ent.getId());
+			delete.executeUpdate();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
+	@Override
 	public List<Product> getAll() {
-		// TODO Auto-generated method stub
-		return null;
+			List<Product> clients = new ArrayList<Product>();
+		
+		try
+		{
+			ResultSet rs = getAll.executeQuery();
+			while(rs.next()){
+				
+				Product p = new Product();
+				p.setId(rs.getInt("id"));
+				p.setDescription(rs.getString("description"));
+				p.setPrize(rs.getDouble("prize"));
+				p.setName(rs.getString("name"));
+				clients.add(p);
+			}
+		}
+		
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
+		
+		return clients;
 	}
 
+	@Override
 	public Product get(int id) {
 		Product p = null;
 		try {
@@ -110,10 +157,24 @@ public class HsqlProductDao implements Dao<Product>{
 		return p;
 	}
 
-	public void update(Product ent) {
-		// TODO Auto-generated method stub
+	@Override
+	public void persistUpdate(EntityBase entity) {
+		Product ent = (Product) entity;
+		try
+		{
+			update.setString(1, ent.getName());
+			update.setString(2, ent.getDescription());
+			update.setDouble(3, ent.getPrize());
+			update.setInt(5, ent.getId());
+			update.executeUpdate();
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
 		
 	}
+
 
 	
 	
