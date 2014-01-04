@@ -9,16 +9,12 @@ import java.util.Map;
 public class HsqlUnitOfWork implements UnitOfWork{
 
 	private Map<EntityBase, UnitOfWorkDao> added;
-	private Map<EntityBase, UnitOfWorkDao> deleted;
-	private Map<EntityBase, UnitOfWorkDao> changed;
 	
 	Connection connection;
 	
 	public HsqlUnitOfWork()
 	{
 		added = new HashMap<EntityBase, UnitOfWorkDao>();
-		deleted = new HashMap<EntityBase, UnitOfWorkDao>();
-		changed = new HashMap<EntityBase, UnitOfWorkDao>();
 		connection = getConnection();
 	}
 	
@@ -37,17 +33,20 @@ public class HsqlUnitOfWork implements UnitOfWork{
 	}
 	
 	public void markNew(EntityBase ent, UnitOfWorkDao dao) {
+		ent.setOperation(EntityOperation.insert);
 		added.put(ent, dao);
 		
 	}
 
 	public void markDeleted(EntityBase ent, UnitOfWorkDao dao) {
-		deleted.put(ent, dao);
+		ent.setOperation(EntityOperation.delete);
+		added.put(ent, dao);
 		
 	}
 
 	public void markUpdated(EntityBase ent, UnitOfWorkDao dao) {
-		changed.put(ent, dao);
+		ent.setOperation(EntityOperation.update);
+		added.put(ent, dao);
 		
 	}
 
@@ -57,13 +56,24 @@ public class HsqlUnitOfWork implements UnitOfWork{
 		try{
 			conn.setAutoCommit(false);
 			
-			for(EntityBase ent: added.keySet())
-				added.get(ent).persistAdd(ent);
-			for(EntityBase ent : changed.keySet())
-				changed.get(ent).persistUpdate(ent);
-			for(EntityBase ent : deleted.keySet())
-				deleted.get(ent).persistDelete(ent);
-			
+			for(EntityBase ent : added.keySet() )
+			{
+				switch(ent.getOperation())
+				{
+					case insert:
+					{
+						added.get(ent).persistAdd(ent);
+					}
+					case delete:
+					{
+						added.get(ent).persistDelete(ent);
+					}
+					case update:
+					{
+						added.get(ent).persistUpdate(ent);
+					}
+				}
+			}
 			conn.commit();
 			conn.setAutoCommit(true);
 			
