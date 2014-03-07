@@ -1,9 +1,21 @@
 package org.example.shop;
 
-import org.example.db.EntityBase;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
-public class Address extends EntityBase {
-
+@Entity
+@Table(name="Adres")
+public class Address //extends EntityBase {
+{
+	@Id
+	@GeneratedValue
+	private int id;
+	
+	@Column(name="Miasto")
 	private String city;
 	private String street;
 	private String postalCode;
@@ -11,6 +23,8 @@ public class Address extends EntityBase {
 	private int localNumber;
 	
 	//relacja adres - klient
+	
+	@ManyToOne
 	private Client client;
 	
 	

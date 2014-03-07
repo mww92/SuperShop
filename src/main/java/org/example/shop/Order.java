@@ -6,7 +6,7 @@ import java.util.List;
 import org.example.db.EntityBase;
 
 public class Order extends EntityBase {
-	
+
 	private String number;
 	private Date date;
 	

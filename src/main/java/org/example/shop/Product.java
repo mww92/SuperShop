@@ -3,7 +3,7 @@ package org.example.shop;
 import org.example.db.EntityBase;
 
 public class Product extends EntityBase{
-	
+
 	private String name;
 	private String description;
 	private double prize;

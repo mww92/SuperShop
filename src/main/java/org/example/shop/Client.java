@@ -1,11 +1,20 @@
 package org.example.shop;
 
+import java.util.Collection;
 import java.util.List;
 
-import org.example.db.EntityBase;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
-public class Client extends EntityBase {
+@Entity
+public class Client {
 
+	@Id
+	@GeneratedValue
+	private int id;
 	
 	
 	private String number;
@@ -13,9 +22,12 @@ public class Client extends EntityBase {
 	private String surname;
 	private String email;
 	
-	//relacja klien-adres
-	public List<Address> addresses;
+	//relacja klient-adres
+	@OneToMany(mappedBy="client")
+	public Collection<Address> addresses;
+	
 	//relacja klient-zamowienie
+	@Transient
 	public List<Order> orders;
 	
 	public List<Order> getOrders() {
@@ -24,7 +36,7 @@ public class Client extends EntityBase {
 	public void setOrders(List<Order> orders) {
 		this.orders = orders;
 	}
-	public List<Address> getAddresses() {
+	public Collection<Address> getAddresses() {
 		return addresses;
 	}
 	public void setAddresses(List<Address> addresses) {

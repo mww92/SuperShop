@@ -1,36 +1,42 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
+import java.util.ArrayList;
 
-import org.example.db.HsqlUnitOfWork;
-import org.example.db.dao.ClientDao;
-import org.example.db.dao.HsqlClientDao;
-import org.example.db.dao.HsqlProductDao;
+import org.example.shop.Address;
 import org.example.shop.Client;
-import org.example.shop.Product;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 
 
 public class Main {
 
 	public static void main(String[] args) {
 		
+		SessionFactory factory = new Configuration().configure().buildSessionFactory();
+		Session session = factory.openSession();
 		
+		session.beginTransaction();
 		
-			HsqlUnitOfWork uow = new HsqlUnitOfWork();
-			ClientDao dao = new HsqlClientDao(uow);
-			Client c = new Client();
-			
-			c.setEmail("a@wp.pl");
-			c.setName("Jan");
-			c.setSurname("Nowak");
-			c.setNumber("1234");
-			c.setId(0);
-			
-			Client c1 = new Client();
-			c1.setId(0);
-			dao.delete(c1);
-			dao.save(c);
-			uow.commit();
-			uow.close();
+		Address adres = new Address();
+		adres.setCity("Gdańsk");
+		adres.setHouseNumber("55");
+		adres.setStreet("Brzegi");
+		adres.setPostalCode("80-300");
+		adres.setLocalNumber(1);
+		
+		Client c = new Client();
+		c.setAddresses(new ArrayList<Address>());
+		c.getAddresses().add(adres);
+		adres.setClient(c);
+		
+		c.setName("Jan");
+		c.setSurname("Kowalski");
+		c.setNumber("AB1234");
+		c.setEmail("j.kowalski@onet.pl");
+		
+		session.persist(c);
+		
+		session.getTransaction().commit();
+		
 		System.out.println("koniec");
 	}
 
